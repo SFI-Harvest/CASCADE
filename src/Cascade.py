@@ -156,6 +156,10 @@ class Cascade:
             "timing_kwargs": timing_kwargs,
             "log_kwargs": log_kwargs
         }
+
+        ## Setting up the projection 
+        ## TODO: make this more flexible
+        self.projection = get_midnor_projection()
         
 
         self.timing.end_time_id(t1)
