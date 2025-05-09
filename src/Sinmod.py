@@ -16,6 +16,7 @@ from Boundary import Boundary
 from utilis.Logger import Logger
 from utilis.Timing import Timing
 from utilis.Grid import Grid
+from utilis.utility_funcs import *
 
 
 class Sinmod:
@@ -419,9 +420,12 @@ if __name__ == "__main__":
     from scipy.ndimage import gaussian_filter
 
     # Example usage
-    sinmod_path = "/Users/ajolaise/Library/CloudStorage/OneDrive-NTNU/PhD/code/CASCADE/data/sinmod/transfer_382450_files_da8d2b9a"
+    wdir = get_project_root()
+    sinmod_path = "/data/sinmod/transfer_382450_files_da8d2b9a/"
+    sinmod_path = os.path.join(wdir, sinmod_path)
     files = ["BioStates_froshelf.nc", "BioStates_midnor.nc", "mixOut.nc", "physStates.nc"]
-    plot_test_path = "/Users/ajolaise/Library/CloudStorage/OneDrive-NTNU/PhD/code/CASCADE/figures/tests/Sinmod/"
+
+    plot_test_path = os.path.join(wdir, "figures/tests/Sinmod/")
 
 
     def filter_function(calanus_finmarchicus):
