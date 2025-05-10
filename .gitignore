@@ -7,6 +7,7 @@
 **.png
 **/DockerTest
 
+
 _site
 .sass-cache
 .jekyll-cache
@@ -15,6 +16,7 @@ vendor
 
 **.nc
 *.nc
+*.pkl
 *.log
 **/sinmod
 */sinmod
