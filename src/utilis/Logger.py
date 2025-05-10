@@ -228,7 +228,9 @@ class Logger:
 
 
 if __name__ == "__main__":
-    path_log_file = "/Users/ajolaise/Library/CloudStorage/OneDrive-NTNU/PhD/code/CASCADE/figures/tests/Logger"
+    from utility_funcs import *
+    wdir = get_project_root()
+    path_log_file = os.path.join(wdir, "figures/tests/Logger")
     log_file_1 = path_log_file + "/test1.log"
     log_file_2 = path_log_file + "/test2.log"
     log_file_3 = path_log_file + "/test3.log"
