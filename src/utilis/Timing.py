@@ -922,10 +922,9 @@ class Timing:
 if __name__ == "__main__":
 
 
-
-
-    plot_path = "/Users/ajolaise/Library/CloudStorage/OneDrive-NTNU/PhD/code/2023/PoissonModel3D/figures/tests/Timing"
-    plot_path = "/Users/ajolaise/Library/CloudStorage/OneDrive-NTNU/PhD/code/CASCADE/figures/tests/Timing"
+    from utility_funcs import *
+    wdir = get_project_root()
+    plot_path = os.path.join(wdir, "figures", "tests", "Timing")
     timing = Timing()
 
     # Example usage
