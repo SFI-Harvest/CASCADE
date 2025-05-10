@@ -1296,9 +1296,12 @@ if __name__=="__main__":
     # Setting up the sinmod model
     ###########################################
     # Example usage
-    sinmod_path = "/Users/ajolaise/Library/CloudStorage/OneDrive-NTNU/PhD/code/CASCADE/data/sinmod/transfer_382450_files_da8d2b9a"
+    wdir = get_project_root()
+    folder_test = os.path.join(wdir, "figures/tests/Cascade")
+    sinmod_path = os.path.join(wdir, "/data/sinmod/transfer_382450_files_da8d2b9a")
     files = ["BioStates_froshelf.nc", "BioStates_midnor.nc"]
-    plot_test_path = "/Users/ajolaise/Library/CloudStorage/OneDrive-NTNU/PhD/code/CASCADE/figures/tests/Sinmod/"
+    plot_test_path = "/figures/tests/Sinmod/"
+    plot_test_path = os.path.join(wdir, plot_test_path)
 
     file_ind = 0
     logging_kwargs = { 
