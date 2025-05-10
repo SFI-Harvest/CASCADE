@@ -380,15 +380,16 @@ class Covariance:
 if __name__ == "__main__":
     from utilis.Timing import Timing
     from utilis.Logger import Logger
+    from utilis.utility_funcs import *
     import numpy as np
     import os
     import time
 
     import matplotlib.pyplot as plt
 
+    wdir = get_project_root()
+    stor_path = os.path.join(wdir, "figures/tests/Covariance")
     
-    stor_path = "/Users/ajolaise/Library/CloudStorage/OneDrive-NTNU/PhD/code/CASCADE/figures/tests/Covariance"
-
 
     logger_kwargs = {
         "log_file": os.path.join(stor_path, "Covariance.log"),
