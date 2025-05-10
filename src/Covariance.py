@@ -389,6 +389,9 @@ if __name__ == "__main__":
 
     wdir = get_project_root()
     stor_path = os.path.join(wdir, "figures/tests/Covariance")
+
+    if not os.path.exists(stor_path):
+        os.makedirs(stor_path)
     
 
     logger_kwargs = {
