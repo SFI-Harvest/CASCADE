@@ -3,18 +3,27 @@
 import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
- 
+
+
+
+# This is a simple example of using watchdog to monitor a directory for file changes
+# and print the file content when a file is created.
+
+
  
 class OnMyWatch:
     # Set the directory on watch
-    watchDirectory = "src/simple_tests/files"
- 
-    def __init__(self):
+    watchDirectiories = "src/simple_tests/files/"
+
+
+
+    def __init__(self, watchDirectiories = watchDirectiories):
         self.observer = Observer()
+        print("Wathcng directory: ", self.watchDirectiories)
  
     def run(self):
         event_handler = Handler()
-        self.observer.schedule(event_handler, self.watchDirectory, recursive = True)
+        self.observer.schedule(event_handler, self.watchDirectiories, recursive = True)
         self.observer.start()
         try:
             while True:
@@ -36,9 +45,10 @@ class Handler(FileSystemEventHandler):
         elif event.event_type == 'created':
             # Event is created, you can process it now
             print("Watchdog received created event - % s." % event.src_path)
-        """elif event.event_type == 'modified':
-            # Event is modified, you can process it now
-            print("Watchdog received modified event - % s." % event.src_path)"""
+
+            # Print the file content
+            return event.src_path
+
              
  
 if __name__ == '__main__':
