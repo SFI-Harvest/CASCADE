@@ -356,7 +356,7 @@ class Sinmod:
         f_name = "get_prior_S_T"
         self.logger.log_debug(f"[{f_name}] {S.shape}")
         # Check if T does not have a length
-        # Then it is a single time step, and will caouse some issues later
+        # Then it is a single time step, and will caouse some issues later  
         if not hasattr(T, "__len__"):
             # A bit of a hack to make sure that the interpolation works
             # for a single time step, probalby not the best way to do it, but not worth the time to fix it
@@ -421,7 +421,7 @@ if __name__ == "__main__":
 
     # Example usage
     wdir = get_project_root()
-    sinmod_path = "/data/sinmod/transfer_382450_files_da8d2b9a/"
+    sinmod_path = "data/sinmod/"
     sinmod_path = os.path.join(wdir, sinmod_path)
     files = ["BioStates_froshelf.nc", "BioStates_midnor.nc", "mixOut.nc", "physStates.nc"]
 

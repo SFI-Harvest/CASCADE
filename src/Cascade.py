@@ -148,6 +148,9 @@ class Cascade:
         self.data_dict["gridded_data"] = {}
         self.data_dict["all_data"] = {}
 
+        # List of files included 
+        self.data_dict["all_data"]["data_source"] = []
+
         # Storing the parameters
         self.all_parameters = {
             "model_parameters": model_parameters,
@@ -729,6 +732,20 @@ class Cascade:
         self.logger.log_info(f"[{f_name}] Time taken for prediction: {t2 - t1:.2f} seconds")
         return predictions, S, T
     
+
+    def predict_inside_boundary(self, boundary_path, t=time.time()):
+        # Predict the field inside a boundary for a given time
+        f_name = "predict_inside_boundary"
+        t_tok, t1 = self.timing.start_time(f_name, return_time_stamp=True)
+        self.logger.log_info(f"[{f_name}] Predicting inside boundary")
+
+        # Get the boundary points
+
+        t2 = self.timing.end_time_id(t_tok, return_time_stamp=True)
+        self.logger.log_info(f"[{f_name}] Time taken for prediction: {t2 - t1:.2f} seconds")
+        pass
+        #return predictions, S, T
+    
     def get_prediction_top_xm(self, predictions, top_m=10):
         """
         Get the prediction for the top x meters
@@ -1298,7 +1315,7 @@ if __name__=="__main__":
     # Example usage
     wdir = get_project_root()
     folder_test = os.path.join(wdir, "figures/tests/Cascade")
-    sinmod_path = os.path.join(wdir, "/data/sinmod/transfer_382450_files_da8d2b9a")
+    sinmod_path = os.path.join(wdir, "data/sinmod/")
     files = ["BioStates_froshelf.nc", "BioStates_midnor.nc"]
     plot_test_path = "/figures/tests/Sinmod/"
     plot_test_path = os.path.join(wdir, plot_test_path)

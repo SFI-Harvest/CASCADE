@@ -1,5 +1,7 @@
 import datetime
+from netCDF4 import Dataset
 from pathlib import Path
+import pyproj 
 import os
 
 def get_project_root() -> Path:
@@ -76,8 +78,8 @@ def get_midnor_projection():
 
 
 if __name__ == "__main__":
-    from netCDF4 import Dataset
-    import pyproj 
+    
+
     import numpy as np
     import os 
      # Example usage
