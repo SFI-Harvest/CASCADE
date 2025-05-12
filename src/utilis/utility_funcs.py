@@ -45,7 +45,7 @@ def get_midnor_projection():
     # Adjust the path as necessary
     work_dir = get_project_root()
     print(f"Current working directory: {work_dir}")
-    file_path = "data/sinmod/transfer_382450_files_da8d2b9a/physStates.nc"
+    file_path = "data/sinmod/physStates.nc"
     file_pathh = os.path.join(work_dir, file_path)
     print(f"Loading file from {file_path}")
     if not os.path.exists(file_path):
