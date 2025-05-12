@@ -3,6 +3,7 @@ from netCDF4 import Dataset
 from pathlib import Path
 import pyproj 
 import os
+import numpy as np
 
 def get_project_root() -> Path:
     return Path(__file__).parent.parent.parent
