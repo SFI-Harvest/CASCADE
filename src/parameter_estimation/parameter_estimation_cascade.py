@@ -1,5 +1,7 @@
 import numpy as np
+import pandas as pd
 import random
+import sys
 from scipy.sparse import lil_matrix
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import spsolve
@@ -11,6 +13,24 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold
 from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import LinearRegression
+
+
+sys.path.insert(0, '/Users/ajolaise/Library/CloudStorage/OneDrive-NTNU/PhD/code/CASCADE/src')
+# Load utilitys
+from utilis.Logger import Logger
+from utilis.Timing import Timing
+from utilis.utility_funcs import *
+from utilis.Grid import Grid
+from utilis.WGS import WGS
+from Covariance import Covariance
+
+
+
+# Load other
+from Sinmod import Sinmod
+from Boundary import Boundary
+
+
 
 
 
@@ -134,6 +154,73 @@ if __name__ == "__main__":
     plt.ylabel("Estimated tau")
     plt.title("Estimated tau vs n")
     plt.show()
+
+
+    # Estimate tau for a set of data files
+    wdir = get_project_root()
+    file_loc = os.path.join(wdir, "data/simulated_data")
+    data_files = [os.path.join(file_loc, f) for f in os.listdir(file_loc) if f.endswith('.csv')]
+
+    print(f"Data files: {data_files}")
+
+    tau_estimates = {
+        "tau_upper_bounds": [],
+        "tau_lower_bounds": [],
+        "tau_bound": [],
+        "tau_biomass": [],
+        "vehicle": [],
+        "n_samples": []
+
+    }
+
+    for data_file in data_files:
+        
+        df = pd.read_csv(data_file)
+        x = df['x'].values
+        y = df['y'].values
+        upper_bounds = df['upper_bounds'].values    
+        lower_bounds = df['lower_bounds'].values
+        biomass = df['biomass'].values
+
+        # Estimate tau for each variable
+        tau_upper_bounds = estimate_tau_y(upper_bounds)
+        tau_lower_bounds = estimate_tau_y(lower_bounds)
+        tau_bound = np.mean([tau_upper_bounds, tau_lower_bounds])
+        tau_biomass = estimate_tau_y(biomass)
+
+        print(f"Estimated tau for {data_file}:")
+        print(f"vehicle: {df['vehicle'].values[0]}")
+        print(f"tau_upper_bounds: {tau_upper_bounds}")
+        print(f"tau_lower_bounds: {tau_lower_bounds}")
+        print(f"tau_bound: {tau_bound}")
+        print(f"tau_biomass: {tau_biomass}")
+
+        # Store the results in the dictionary
+        tau_estimates["tau_upper_bounds"].append(tau_upper_bounds)
+        tau_estimates["tau_lower_bounds"].append(tau_lower_bounds)
+        tau_estimates["tau_bound"].append(tau_bound)
+        tau_estimates["tau_biomass"].append(tau_biomass)
+        tau_estimates["vehicle"].append(df['vehicle'].values[0])
+        tau_estimates["n_samples"].append(len(df))
+    tau_estimates_df = pd.DataFrame(tau_estimates)
+
+    print(tau_estimates_df) 
+
+    # Get the weighted average of the tau estimates by vehicle
+    vehicles = tau_estimates_df['vehicle'].unique()
+    for vehicle in vehicles:
+        vehicle_df = tau_estimates_df[tau_estimates_df['vehicle'] == vehicle]
+        weighted_tau_upper_bounds = np.average(vehicle_df['tau_upper_bounds'], weights=vehicle_df['n_samples'])
+        weighted_tau_lower_bounds = np.average(vehicle_df['tau_lower_bounds'], weights=vehicle_df['n_samples'])
+        weighted_tau_bound = np.average(vehicle_df['tau_bound'], weights=vehicle_df['n_samples'])
+        weighted_tau_biomass = np.average(vehicle_df['tau_biomass'], weights=vehicle_df['n_samples'])
+        print(f"Weighted tau for {vehicle}:")
+        print(f"weighted_tau_upper_bounds: {weighted_tau_upper_bounds}")
+        print(f"weighted_tau_lower_bounds: {weighted_tau_lower_bounds}")
+        print(f"weighted_tau_bound: {weighted_tau_bound}")
+        print(f"weighted_tau_biomass: {weighted_tau_biomass}")
+
+
 
 
     

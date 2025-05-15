@@ -247,12 +247,79 @@ class Cascade:
         return np.exp(corrected_sinmod) - min_val
 
 
+    def check_data(self, data_dict):
+        f_name = "check_data"
+        """
+        Check if the data for the format and other checks
+        """
+
+        # Check if the biomass is positive
+        if np.any(data_dict["y"] < 0):
+            self.logger.log_error(f"[{f_name}] Data points are negative. Cannot take log of negative values.")
+            n_negative = np.sum(data_dict["y"] < 0)
+            n_total = len(data_dict["y"])
+            min_val = np.min(data_dict["y"])
+            self.logger.log_error(f"[{f_name}] Number of negative data points: {n_negative} out of {n_total}")
+            self.logger.log_error(f"[{f_name}] Minimum value: {min_val}")
+            option = input("Do you want to continue? \n if yes then the data will be clipped (y/n): ")
+
+            if option == "y":
+                self.logger.log_warning(f"[{f_name}] Data points are negative. Clipping the data to 0.")
+                data_dict["y"] = np.clip(data_dict["y"], 0, None)
+            else:
+                raise ValueError("Data points are negative. Cannot take log of negative values.")
+        
+        # Check if the upper and lower bounds are positive
+        if np.any(data_dict["upper_bound"] < 0) or np.any(data_dict["lower_bound"] < 0):
+            self.logger.log_error(f"[{f_name}] Upper and lower bounds are negative. Depths cannot be negative.")
+            n_negative = np.sum(data_dict["upper_bound"] < 0) + np.sum(data_dict["lower_bound"] < 0)
+            n_total = len(data_dict["upper_bound"]) + len(data_dict["lower_bound"])
+            min_val = np.min(np.concatenate((data_dict["upper_bound"], data_dict["lower_bound"])))
+            self.logger.log_error(f"[{f_name}] Number of negative data points: {n_negative} out of {n_total}")
+            self.logger.log_error(f"[{f_name}] Minimum value: {min_val}")
+            option = input("Do you want to continue? \n if yes then the data will be clipped (y/n): ")
+
+            if option == "y":
+                self.logger.log_warning(f"[{f_name}] Data points are negative. Clipping the data to 0.")
+                data_dict["upper_bound"] = np.clip(data_dict["upper_bound"], 0, None)
+                data_dict["lower_bound"] = np.clip(data_dict["lower_bound"], 0, None)
+            else:
+                raise ValueError("Data points are negative. Cannot take log of negative values.")
+            
+
+        # Check if the upper and lower bounds are in the right order
+        # The upper bound should have a lower depth than the lower bound, the depth values are positive, so high value is deeper
+        if np.any(data_dict["upper_bound"] > data_dict["lower_bound"]):
+            self.logger.log_error(f"[{f_name}] Upper bound is deeper than lower bound. The upper bound should be shallower than the lower bound.")
+            n_deeper = np.sum(data_dict["upper_bound"] > data_dict["lower_bound"])
+            n_total = len(data_dict["upper_bound"])
+            max_neg_diff = np.max(data_dict["upper_bound"] - data_dict["lower_bound"])
+            self.logger.log_error(f"[{f_name}] Number of upper bounds deeper than lower bounds: {n_deeper} out of {n_total}")
+            self.logger.log_error(f"[{f_name}] Maximum diff: {max_neg_diff}")
+            option = input("Do you want to continue? \n if yes then the data will be swapped where relevant (y/n): ")
+
+            if option == "y":
+                self.logger.log_warning(f"[{f_name}] Data points are negative. Clipping the data to 0.")
+                # Swap the values
+                data_dict["upper_bound"], data_dict["lower_bound"] = np.minimum(data_dict["upper_bound"], data_dict["lower_bound"]), np.maximum(data_dict["upper_bound"], data_dict["lower_bound"])
+            else:
+                raise ValueError("Data points are negative. Cannot take log of negative values.")
+
+
+
+
+
+
     def add_data_to_model(self, data_dict):
         """
         Add data to the model
         """
         f_name = "add_data_to_model"
         t_tok, t1 = self.timing.start_time(f_name, return_time_stamp=True)
+
+        # Check if the data is in the right format
+        self.check_data(data_dict)
+
         n = len(data_dict["Sx"])
         self.logger.log_info(f"[{f_name}] Adding data to the model")
         self.logger.log_info(f"[{f_name}] Number of data points: {n}")
@@ -277,8 +344,6 @@ class Cascade:
         data_dict["prior_lower_bound"] = mu_lb
         data_dict["prior_upper_bound"] = mu_ub
 
-
-    
 
         assignments = self.grid.get_assignment(S, T)
         data_dict["S_grid_inds"] = assignments["grid_inds"]
@@ -822,6 +887,16 @@ class Cascade:
             time_var = nc_file.createVariable("time", float, ("time"))
             x_var = nc_file.createVariable("x", float, ("xc"))
             y_var = nc_file.createVariable("y", float, ("yc"))
+        
+            # Create coordinate variables
+            lat_var = nc_file.createVariable("latitude", float, ("yc", "xc"))
+            lon_var = nc_file.createVariable("longitude", float, ("yc", "xc"))
+
+            S = self.grid.grid
+            lon, lat = self.projection(S[:, 0], S[:, 1], inverse=True)
+            lon_var[:] = lon.reshape((len(y_ax), len(x_ax)))
+            lat_var[:] = lat.reshape((len(y_ax), len(x_ax)))
+
 
             # Create data variables
             m_y_var = nc_file.createVariable("biomass_estimate", float, ("time", "yc", "xc"))
@@ -1386,7 +1461,7 @@ if __name__=="__main__":
 
     ###### Store predictions 
     T = [time.time() + 60*60*i for i in range(4)]
-    cascade.predict_field_prod(T, store_format="nc", filename=folder + "/predictions.nc")
+    cascade.predict_field_prod(T, store_format="nc", filename=folder + "/predictions3.nc")
 
     ##### Print the data shape
     cascade.print_data_shape()
@@ -1405,4 +1480,5 @@ if __name__=="__main__":
     ##################################################  
     # Try meging the data 
     cascade.timing.merge_timing_data(cascade.prior.timing)
+    cascade.timing.merge_timing_data(cascade.covariance.timing)
     cascade.timing.plot_timing_data(save_path=folder, plot_name="timing_data_cascade")
