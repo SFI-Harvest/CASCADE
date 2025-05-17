@@ -114,6 +114,16 @@ class RunModel:
 
         self.cascade.add_data_to_model(data_dict)
 
+    def serve_prediction_request(self, file):
+        """
+        Serve a prediction request.
+
+        Args:
+            file (str): Path to the prediction request file.
+        """
+
+        
+
     def run(self):
         """
         Run the model.

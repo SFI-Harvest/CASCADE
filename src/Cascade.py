@@ -1471,7 +1471,7 @@ if __name__=="__main__":
 
 
     #### Test the predictions 
-    CascadePlotting.plot_predicions(cascade)
+    CascadePlotting.plot_predicions(cascade)y
 
 
     #### 
